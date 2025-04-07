@@ -1,0 +1,33 @@
+{
+  "name": "pulse",
+  "description": "pulse server",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --watch 'src/**' --ext 'ts,json' --exec 'npm run build && npm run start'",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "format": "prettier --write ."
+  },
+  "author": "Google LLC",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.2"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^20.12.12",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.5.3",
+    "typescript": "^5.4.5"
+  }
+}

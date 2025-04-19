@@ -2,10 +2,24 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import { Server } from "socket.io";
+import { initializeSocketIO } from "./socket";
+import { createServer } from "http";
 
 dotenv.config();
 
 const app = express();
+const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+  pingTimeout: 60000,
+  cors: {
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  },
+});
+
+app.set("io", io);
 
 app.use(
   cors({
@@ -29,4 +43,6 @@ app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/otp", otpRouter);
 app.use("/api/v1/user", userRouter);
 
-export { app };
+initializeSocketIO(io);
+
+export { httpServer };

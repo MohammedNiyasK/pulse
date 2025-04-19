@@ -155,7 +155,7 @@ const verifyOtp = asyncHandler(async (req: Request, res: Response) => {
     otpRecord.isVerified = true;
     await otpRecord.save();
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-      existingUser._id as string
+      existingUser._id.toString()
     );
     await otpRecord.deleteOne({ mobileNumber });
     const loggedInUser = await User.findById(existingUser._id).select(

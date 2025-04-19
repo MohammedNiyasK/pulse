@@ -1,13 +1,13 @@
 import connectDB from "./db/database";
-
-import { app } from "./app";
+import { httpServer } from "./app";
 
 const port = parseInt(process.env.PORT || "3000");
 
 connectDB()
   .then(() => {
-    app.listen(port, () => {
+    httpServer.listen(port, () => {
       console.log(`⚙️ Server is running at port : ${process.env.PORT}`);
+      console.log(`🔄 Socket.io server running`);
     });
   })
   .catch((err) => {

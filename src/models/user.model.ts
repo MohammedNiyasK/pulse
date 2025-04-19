@@ -1,16 +1,34 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 import jwt from "jsonwebtoken";
 
-interface UserDocument extends Document {
+interface IUser {
   username: string;
   mobileNumber: string;
-  avatar: string | null | undefined;
-  refreshToken?: string | null | undefined;
+  avatar?: string;
+  refreshToken?: string;
+}
+
+interface IUserMethods {
   generateAccessToken(): string;
   generateRefreshToken(): string;
 }
 
-const userSchema = new Schema<UserDocument>(
+type UserModel = Model<IUser, {}, IUserMethods>;
+
+export type UserDocument = Document<unknown, {}, IUser> &
+  IUser &
+  IUserMethods & { _id: mongoose.Types.ObjectId };
+
+// interface UserDocument extends Document {
+//   username: string;
+//   mobileNumber: string;
+//   avatar: string | null | undefined;
+//   refreshToken?: string | null | undefined;
+//   generateAccessToken(): string;
+//   generateRefreshToken(): string;
+// }
+
+const userSchema = new Schema<IUser, UserModel, IUserMethods>(
   {
     username: {
       type: String,

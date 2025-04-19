@@ -33,7 +33,7 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
   });
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    user._id as string
+    user._id.toString()
   );
 
   await OTP.deleteOne({ mobileNumber });

@@ -7,7 +7,6 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { emitSocketEvent } from "../socket";
 import { chatEventEnum } from "../constants";
 
-
 const chatCommonAggregation = () => {
   return [
     {
@@ -23,7 +22,6 @@ const chatCommonAggregation = () => {
               username: 1,
               mobileNumber: 1,
               avatar: 1,
-              // Exclude refreshToken and other sensitive fields
             },
           },
         ],
@@ -71,7 +69,6 @@ const chatCommonAggregation = () => {
               createdAt: 1,
               updatedAt: 1,
               sender: 1,
-              // Include other fields you need
             },
           },
         ],
@@ -84,7 +81,6 @@ const chatCommonAggregation = () => {
       },
     },
     {
-      // Add a virtual isRead field if needed
       $addFields: {
         "lastMessage.isRead": {
           $cond: {
@@ -159,7 +155,6 @@ const createOrGetAOneOnOneChat = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Internal server error");
   }
   payload?.participants.forEach((participant: { _id: string }) => {
-    console.log("inside the paricticpants");
     if (participant._id.toString() === req.user._id.toString()) return;
     emitSocketEvent(
       req,

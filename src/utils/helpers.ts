@@ -1,5 +1,6 @@
 import { User } from "../models/user.model";
 import { ApiError } from "./ApiError";
+import { Request } from "express";
 
 const generateOtpNumber = (length = 6) => {
   const digits = "0123456789";
@@ -31,4 +32,26 @@ const generateAccessAndRefreshToken = async (userId: string) => {
   }
 };
 
-export { generateOtpNumber, generateAccessAndRefreshToken };
+const getStaticFilePath = (req: Request, fileName: string) => {
+  return `${req.protocol}://${req.get("host")}/images/${fileName}`;
+};
+
+const getLocalPath = (fileName: string) => {
+  return `public/images/${fileName}`;
+};
+
+function getAttachmentType(mimeType: string) {
+  if (mimeType.startsWith("image/")) return "image";
+  if (mimeType.startsWith("video/")) return "video";
+  if (mimeType.startsWith("audio/")) return "audio";
+  if (mimeType === "application/pdf") return "pdf";
+  return "other";
+}
+
+export {
+  generateOtpNumber,
+  generateAccessAndRefreshToken,
+  getStaticFilePath,
+  getLocalPath,
+  getAttachmentType,
+};

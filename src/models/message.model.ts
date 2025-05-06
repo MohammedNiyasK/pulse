@@ -2,7 +2,7 @@ import { model, Schema, Document, Types } from "mongoose";
 
 type AttachmentType = "image" | "pdf" | "video" | "audio" | "other";
 
-interface IAttachment {
+export interface IAttachment {
   url: string;
   localPath?: string;
   type: AttachmentType;

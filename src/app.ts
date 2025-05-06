@@ -38,12 +38,14 @@ import healthCheckRouter from "./routes/healthcheck.routes";
 import otpRouter from "./routes/otp.routes";
 import userRouter from "./routes/user.routes";
 import chatRouter from "./routes/chat.routes";
+import messageRouter from "./routes/message.routes";
 
 //routes declaration
 app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/otp", otpRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/chats", chatRouter);
+app.use("/api/v1/messages", messageRouter);
 
 initializeSocketIO(io);
 

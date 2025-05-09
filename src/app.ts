@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { Server } from "socket.io";
 import { initializeSocketIO } from "./socket";
 import { createServer } from "http";
+import morganMiddleware from "./logger/morgan.logger";
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
+app.use(morganMiddleware);
 
 // routes import
 import healthCheckRouter from "./routes/healthcheck.routes";

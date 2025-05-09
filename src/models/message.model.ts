@@ -15,6 +15,7 @@ export interface IAttachment {
 }
 
 interface IChatMessage extends Document {
+  _id: Types.ObjectId;
   sender: Types.ObjectId;
   content?: string;
   attachments: IAttachment[];

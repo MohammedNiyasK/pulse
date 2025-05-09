@@ -8,6 +8,7 @@ import {
   getAttachmentType,
   getLocalPath,
   getStaticFilePath,
+  removeLocalFile,
 } from "../utils/helpers";
 import { emitSocketEvent } from "../socket";
 import { chatEventEnum } from "../constants";
@@ -129,7 +130,7 @@ const sendMessage = asyncHandler(async (req, res) => {
   const messages = await ChatMessage.aggregate([
     {
       $match: {
-        _id: new mongoose.Types.ObjectId(message._id as string),
+        _id: new mongoose.Types.ObjectId(message._id),
       },
     },
     ...chatMessageCommonAggreggation(),
@@ -153,4 +154,67 @@ const sendMessage = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, receivedMessage, "Message saved succesfully"));
 });
 
-export { getAllMessages, sendMessage };
+const deleteMessage = asyncHandler(async (req, res) => {
+  const { chatId, messageId } = req.params;
+
+  const chat = await Chat.findOne({
+    _id: new mongoose.Types.ObjectId(chatId),
+    participants: req.user?._id,
+  });
+  if (!chat) {
+    throw new ApiError(404, "Chat does not exist");
+  }
+
+  const message = await ChatMessage.findOne({
+    _id: new mongoose.Types.ObjectId(messageId),
+  });
+  if (!message) {
+    throw new ApiError(404, "Message does not exist");
+  }
+  // check if the user is the sender of the message (only sender can delete the message)
+  if (message.sender.toString() !== req.user._id.toString()) {
+    throw new ApiError(
+      403,
+      "You are not authorized to delete the message , you are not the sender"
+    );
+  }
+  if (message.attachments.length > 0) {
+    // If the file has stored in server remove from the server
+    message.attachments.forEach((attachment) => {
+      if (attachment.localPath) removeLocalFile(attachment.localPath);
+    });
+  }
+
+  await ChatMessage.deleteOne({ _id: new mongoose.Types.ObjectId(messageId) });
+
+  if (
+    chat?.lastMessage &&
+    chat.lastMessage.toString() === message._id.toString()
+  ) {
+    const lastMessage = await ChatMessage.findOne(
+      { chat: chatId, _id: { $ne: message._id } },
+      {},
+      { sort: { createdAt: -1 } }
+    );
+
+    await Chat.findByIdAndUpdate(chatId, {
+      lastMessage: lastMessage ? lastMessage?._id : null,
+    });
+  }
+
+  // Logic to emit socket event to the other participants
+  chat.participants.forEach((participantObjectId) => {
+    if (participantObjectId.toString() === req.user._id.toString()) return;
+    emitSocketEvent(
+      req,
+      participantObjectId.toString(),
+      chatEventEnum.MESSAGE_DELETE_EVENT,
+      message
+    );
+  });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, message, "Message deleted succesfully"));
+});
+
+export { getAllMessages, sendMessage, deleteMessage };

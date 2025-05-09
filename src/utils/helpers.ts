@@ -1,6 +1,8 @@
+import logger from "../logger/winston.logger";
 import { User } from "../models/user.model";
 import { ApiError } from "./ApiError";
 import { Request } from "express";
+import fs from "fs";
 
 const generateOtpNumber = (length = 6) => {
   const digits = "0123456789";
@@ -48,10 +50,21 @@ function getAttachmentType(mimeType: string) {
   return "other";
 }
 
+const removeLocalFile = (localPath: string) => {
+  fs.unlink(localPath, (err) => {
+    if (err) {
+      logger.error("Error while removing local files", err);
+    } else {
+      logger.info("Removed local :", localPath);
+    }
+  });
+};
+
 export {
   generateOtpNumber,
   generateAccessAndRefreshToken,
   getStaticFilePath,
   getLocalPath,
   getAttachmentType,
+  removeLocalFile,
 };
